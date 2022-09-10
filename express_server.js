@@ -17,8 +17,6 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com" }
   
-
-  
   app.get("/u/:id", (req, res) => {
     const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
@@ -31,6 +29,11 @@ const urlDatabase = {
     urlDatabase[shortCode] = longUrl;
     res.send("Ok"); 
 });
+
+  app.post("/urls/:id/delete", (req, res) => {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  });
 
 
 app.set("view engine", "ejs");
