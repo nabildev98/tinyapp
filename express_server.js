@@ -1,21 +1,29 @@
 function generateRandomString() {
-  var result           = '';
-  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * 
-charactersLength));
- }
- return result;
+  //function to generate random numbers
+  return Math.random().toString(20).substr(2, 6);
 }
 const express = require("express");
 const app = express();
 const PORT = 8080;
+var cookieParser = require('cookie-parser')
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com" }
+
+  app.post("/login", (req, res) => {
+    const {username} = req.body;
+    res.cookie("username", username);
+    res.redirect("/urls");
+  })
+
+  app.post("/logout", (req, res) => {
+    res.clearCookie("username", { path: 'templateVars'})
+    res.redirect("/urls");
+  });
   
   app.get("/u/:id", (req, res) => {
     const longURL = urlDatabase[req.params.id];
@@ -23,11 +31,10 @@ const urlDatabase = {
   });
   
   app.post("/urls", (req, res) => {
-    console.log(req.body); 
     const shortCode = generateRandomString();
-    const longUrl = req.body;
+    const longUrl = req.body.longURL;
     urlDatabase[shortCode] = longUrl;
-    res.send("Ok"); 
+    res.send("Ok");
 });
 
   app.post("/urls/:id/delete", (req, res) => {
@@ -35,13 +42,27 @@ const urlDatabase = {
     res.redirect("/urls");
   });
 
+  app.post("/urls/:id", (req, res) => {
+    const shortCode = req.params.id;
+    const longUrl = req.body.longURL;
+    urlDatabase[shortCode] = longUrl;
+    res.redirect("/urls");
+    console.log(longUrl);
+    console.log(req.params);
+  });
 
 app.set("view engine", "ejs");
 
 app.get("/urls", (req, res) => {
-  
-  const templateVars = { urls: urlDatabase };
-    res.render("urls_index", templateVars);
+  let username;
+if(req.cookies){
+      username = req.cookies["username"]
+} else {
+      username = false;
+}
+const templateVars = { urls: urlDatabase, username: username};
+
+   res.render("urls_index", templateVars);
     });
 
 app.get("/", (req, res) => {
@@ -61,7 +82,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
