@@ -2,6 +2,7 @@ function generateRandomString() {
   //function to generate random numbers
   return Math.random().toString(20).substr(2, 6);
 }
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const app = express();
 const PORT = 8080;
@@ -64,9 +65,12 @@ const urlDatabase = {
     const newUser = userLookup(email, users);
     if (!newUser) {
       return res.status(403).send("Email cannot be found")
-    } else if (newUser.password !== password) {
+    // } else if (newUser.password !== password) {
+      } 
+      const test = bcrypt.compareSync(password, newUser.password)
+    if (!test) {
        return res.status(403).send("Password incorrect")
-      }
+      } 
     const id = newUser.id
     res.cookie("user_id", id);
     res.redirect("/urls");
@@ -104,17 +108,21 @@ const urlDatabase = {
   app.post("/register", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    if (email === "" || password === "") {
-      return res.status(400).send("Email and/or password empty")
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    if (email === "") {
+      return res.status(400).send("Email empty")
+    }  
+    if (password === "") {
+      return res.status(400).send("Password empty")
     }
-       else if (userLookup(email, users)) {
-        return res.status(400).send("Email already registered")
+    if (userLookup(email, users)) {
+      return res.status(400).send("Email already registered")
     }
     const id = generateRandomString()
     users[id] = {
       id,
       email,
-      password
+      password:hashedPassword
     }
     res.cookie("user_id", id);   
     res.redirect("/urls");
