@@ -5,8 +5,8 @@ ex. (à la bit.ly)
 
 ## Final Product
 
-!["Login Page"](https://github.com/nabildev98/tinyapp/blob/feature/user-registration/docs/login.png?raw=true)
 !["Register Page"](https://github.com/nabildev98/tinyapp/blob/feature/user-registration/docs/register.png?raw=true)
+!["Login Page"](https://github.com/nabildev98/tinyapp/blob/feature/user-registration/docs/login.png?raw=true)
 !["My URLS"](https://github.com/nabildev98/tinyapp/blob/feature/user-registration/docs/myUrls.png?raw=true)
 !["Edit URL Page"](https://github.com/nabildev98/tinyapp/blob/feature/user-registration/docs/editUrl.png?raw=true)
 
