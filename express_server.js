@@ -1,4 +1,3 @@
-
 const cookieSession = require('cookie-session')
 const bcrypt = require("bcryptjs");
 const express = require("express");
@@ -7,49 +6,30 @@ const app = express();
 const {getUserByEmail} = require('./helpers');
 
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser())
 app.use(cookieSession({
   name: 'session',
   keys: ["random"],
 
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000 
 }))
 
-
 function generateRandomString() {
-  //function to generate random numbers
   return Math.random().toString(20).substr(2, 6);
 }
 
 const users = {};
 
-
 function urlsForUser (user_id) {
   const userUrls = {};
-  // if (user_id) {
     for (let key in urlDatabase) {
       if (urlDatabase[key].userID === user_id) {
         userUrls[key] = urlDatabase[key];
       }
       console.log(urlDatabase[key].userID, user_id);
     }     
-    // }
     return userUrls;
   }
 
-// userDatabase = {
-//   abc123:{
-//     id: abc123,
-//     email: "a@gmail.com",
-//     password
-//   },
-//   bbb123: {
-//     id: bbb123,
-//     email: "b@gmail.com",
-//     password
-//   }
-// }
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -61,13 +41,14 @@ const urlDatabase = {
   },
 };
 
+// ROUTES //
+
 
   app.post("/login", (req, res) => {
     const {email, password} = req.body;
     const newUser = getUserByEmail(email, users);
     if (!newUser) {
       return res.status(403).send("Email cannot be found")
-    // } else if (newUser.password !== password) {
       } 
       const test = bcrypt.compareSync(password, newUser.password)
     if (!test) {
@@ -88,8 +69,6 @@ const urlDatabase = {
       res.render("urls_login", templateVars);      
     }
   });
-
-
 
   app.post("/logout", (req, res) => {
     req.session = null
@@ -165,7 +144,6 @@ const urlDatabase = {
   app.post("/urls/:id", (req, res) => {
     const shortCode = req.params.id;
     const longUrl = req.body.longUrl;
-    // urlDatabase[shortCode] = {longUrl, userId:null};
     urlDatabase[shortCode].longUrl = longUrl;
     res.redirect("/urls");
     console.log(longUrl);
@@ -185,8 +163,6 @@ app.get("/urls", (req, res) => {
     return res.status(401).send("You need to be logged in to perform action <a href='/login'>login</a>")
   } 
 });
-
-
 
 app.get("/", (req, res) => {
   if (req.session.user_id) {
